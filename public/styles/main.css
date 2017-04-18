@@ -1,0 +1,118 @@
+body {
+    background: #ECEFF1;
+    color: rgba(0,0,0,0.87);
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+#message {
+    background: white;
+    max-width: 400px;
+    margin: 16px auto 16px;
+    padding: 32px 24px;
+    border-radius: 3px;
+}
+#message h1 {
+    color: #ffa100;
+    font-weight: bold;
+    font-size: 24px;
+    margin: 0 0 8px;
+}
+#message h2 {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(0,0,0,0.6);
+    margin: 0;
+}
+#message p {
+    line-height: 140%;
+    margin: 16px 0 24px;
+    font-size: 14px;
+}
+#message a {
+    display: block;
+    text-align: center;
+    background: #039be5;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    padding: 16px;
+    border-radius: 4px;
+}
+#message {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#load {
+    color: rgba(0,0,0,0.4);
+    text-align: center;
+    font-size: 13px;
+}
+@media (max-width: 600px) {
+    body, #message {
+        margin-top: 0;
+        background: white;
+        box-shadow: none; }
+    body {
+        border-top: 16px solid #ffa100;
+    }
+}
+.material-icons {
+    font-size: 32px;
+    position: relative;
+}
+.mdl-layout__header-row > h3 > .material-icons {
+    top: 8px;
+}
+.mdl-layout__header-row {
+    padding: 0;
+    margin: 0 auto;
+}
+.mdl-layout__header-row > h3 {
+    font-size: 24px;
+}
+#user-container {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    top: 22px;
+    width: 100%;
+    right: 0;
+    padding-left: 10px;
+    justify-content: flex-end;
+    padding-right: 10px;
+}
+#user-container #user-pic {
+    top: -3px;
+    position: relative;
+    display: inline-block;
+    background: url('/public/images/profile_placeholder.png') no-repeat;
+    width: 40px;
+    height: 40px;
+    background-size: 40px;
+    border-radius: 20px;
+}
+#user-container #user-name {
+    font-size: 16px;
+    line-height: 36px;
+    padding-right: 10px;
+    padding-left: 20px;
+}
+@media screen and (max-width: 610px) {
+    header {
+        height: 113px;
+        padding-bottom: 80px !important;
+    }
+    #user-container {
+        top: 72px;
+        background-color: rgb(3,155,229);
+        height: 38px;
+        padding-top: 3px;
+        padding-right: 2px;
+    }
+    #user-container #user-pic {
+        top: 2px;
+        width: 33px;
+        height: 33px;
+        background-size: 33px;
+    }
+}

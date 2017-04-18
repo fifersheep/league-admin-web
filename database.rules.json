@@ -1,0 +1,9 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth.uid === '18XGW3EIeMawdbDb9W5f4oqA9hs2'",
+    "players": {
+      ".indexOn": ["firstname","lastname"]
+    }
+  }
+}
