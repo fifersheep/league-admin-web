@@ -1,14 +1,50 @@
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 const db = admin.database;
+
+exports.helloWorld = functions.https.onRequest((request, response) => {
+    var test = {}
+    admin.database().ref('test').once('value').then(function(snapshot) {
+        snapshot.forEach(function(child) {
+            child.ref.update({"name": "Boom!"})
+        });
+        response.send(test)
+    });
+});
+
+exports.migratePlayers = functions.https.onRequest((request, response) => {
+    var values = {}
+    admin.database().ref('players').once('value').then(function(snapshot) {
+        snapshot.forEach(function(child) {
+            child.ref.update({"team": "edi-wolves-seniors"})
+        });
+        response.send(test)
+    });
+});
+
+exports.buildFixtureKey = functions.database.ref('/fixtures/{fixtureKey}')
+    .onWrite(event => {
+        if (!event.data.exists()) { return; }
+
+        const original = event.data.val();
+        var date = original['date']
+        var homeTeam = original.home['team']
+        var awayTeam = original.away['team']
+        var slug = fixtureSlug(date, homeTeam, awayTeam);
+        if (slug !== event.params.fixtureKey) {
+            console.log('rewriting fixture with slug: ' + slug)
+            event.data.ref.parent.child(event.params.fixtureKey).set(null)
+            return event.data.ref.parent.child(slug).set(original);
+        } else {
+            console.log('ignoring fixture rewrite, slug already set: ' + slug)
+            return;
+        }
+    });
 
 function createTeam(slug, name, location, conference, stadium, players) {
     db.ref("teams").child(slug).set({
@@ -61,7 +97,7 @@ function createFixture(conference, date, week, status,
     })
 }
 
-function docRefs(list) {
+function refDictFromList(list) {
     var dict = {};
     list.forEach(function (item) {
         dict[item] = true;
