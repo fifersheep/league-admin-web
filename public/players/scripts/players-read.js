@@ -8,8 +8,8 @@ function ReadPlayers() {
 
 ReadPlayers.PLAYER_TEMPLATE =
     '<div class="player-container">' +
-    '<div class="firstname"></div>' +
-    '<div class="lastname"></div>' +
+        '<div class="firstname"></div>' +
+        '<div class="lastname"></div>' +
     '</div>';
 
 ReadPlayers.prototype.displayPlayer = function (key, firstname, lastname) {
