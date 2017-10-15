@@ -1,6 +1,6 @@
 var functions = require('firebase-functions');
 
-module.exports = function (e, db) {
+module.exports = function (e, db, store) {
     e.migrateFixtures = functions.https.onRequest((request, response) => {
         db.ref('fixtures').once('value').then(function(snapshot) {
             snapshot.forEach(function(child) {
@@ -27,9 +27,27 @@ module.exports = function (e, db) {
     })
 
     e.storePlayers = functions.https.onRequest((request, response) => {
-        admin.database().ref('players').once('value').then(function(snapshot) {
+        db.ref('players').once('value').then(function(snapshot) {
             snapshot.forEach(function(child) {
                 store.collection("players").add(child.val())
+            });
+        });
+        response.send({"success": true})
+    })
+
+    e.storeConferences = functions.https.onRequest((request, response) => {
+        db.ref('conferences').once('value').then(function(snapshot) {
+            snapshot.forEach(function(child) {
+                store.collection("conferences").add(child.val())
+            });
+        });
+        response.send({"success": true})
+    })
+
+    e.storeTeams = functions.https.onRequest((request, response) => {
+        db.ref('teams').once('value').then(function(snapshot) {
+            snapshot.forEach(function(child) {
+                store.collection("teams").add(child.val())
             });
         });
         response.send({"success": true})

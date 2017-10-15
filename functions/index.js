@@ -8,7 +8,7 @@ const app = admin.initializeApp(functions.config().firebase);
 const db = admin.database();
 const store = app.firestore();
 
-require('./players/players.js')(exports, store);
-require('./teams/teams.js')(exports, db);
-require('./fixtures/fixtures.js')(exports);
-require('./migration/migration.js')(exports, db);
+require('./src/players/players.js')(exports, store);
+require('./src/teams/teams.js')(exports, db);
+require('./src/fixtures/fixtures.js')(exports);
+require('./src/migration/migration.js')(exports, db, store);
