@@ -47,7 +47,7 @@ module.exports = function (e, db, store) {
     e.storeTeams = functions.https.onRequest((request, response) => {
         db.ref('teams').once('value').then(function(snapshot) {
             snapshot.forEach(function(child) {
-                store.collection("teams").add(child.val())
+                store.collection("teams").doc(child.key).set(child.val())
             });
         });
         response.send({"success": true})
