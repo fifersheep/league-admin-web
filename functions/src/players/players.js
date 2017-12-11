@@ -19,6 +19,22 @@ module.exports = function (e, store) {
             })
     })
 
+    e.players = functions.https.onRequest((request, response) => {
+        var year = request.path.split("/")[1]
+        store.collection("players")
+            .where("seasons." + year, '==', true)
+            .get().then(snapshot => {
+                var players = []
+                snapshot.forEach(doc => {
+                    players.push(doc.data())
+                });
+                response.send({ 
+                    "year" : year,
+                    "players" : players
+                })
+            })
+    })
+
     function createPlayer(firstname, lastname, middlenames, birthplace, age, height, weight, team, number, position, seasons) {
         store.collection("players").add({
             firstname: firstname,

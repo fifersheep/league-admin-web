@@ -10,5 +10,5 @@ const store = app.firestore();
 
 require('./src/players/players.js')(exports, store);
 require('./src/teams/teams.js')(exports, db);
-require('./src/fixtures/fixtures.js')(exports);
+require('./src/fixtures/fixtures.js')(exports, store);
 require('./src/migration/migration.js')(exports, db, store);

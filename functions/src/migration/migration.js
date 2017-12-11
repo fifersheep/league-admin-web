@@ -53,3 +53,10 @@ module.exports = function (e, db, store) {
         response.send({"success": true})
     })
 }
+
+function fixtureSlug(date, homeTeam, awayTeam) {
+    var day = date.substring(0, 2);
+    var month = date.substring(3, 5);
+    var year = date.substring(8, 10);
+    return year + month + day + "-" + homeTeam + "-" + awayTeam;
+}
