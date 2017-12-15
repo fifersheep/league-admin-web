@@ -7,8 +7,9 @@ const admin = require('firebase-admin');
 const app = admin.initializeApp(functions.config().firebase);
 const db = admin.database();
 const store = app.firestore();
+const express = require("express")
 
-require('./src/players/players.js')(exports, store);
+require('./src/players/players.js')(exports, store, express());
 require('./src/teams/teams.js')(exports, db);
 require('./src/fixtures/fixtures.js')(exports, store);
 require('./src/migration/migration.js')(exports, db, store);
