@@ -17,11 +17,18 @@ module.exports = function (e, store, router) {
     router.get('/:id', (request, response) => {
         store.collection('fixtures').doc(request.params.id).get()
             .then(snapshot => {
-                var fixtures = []
-                fixtures.push(snapshot.data())
-                response.status(200).send({ 
-                    'fixtures' : fixtures
-                })
+                var original = snapshot.data()
+                const home_promise = store.collection("teams").doc(original['home']['team']).get()
+                const away_promise = store.collection("teams").doc(original['away']['team']).get()
+                const team_promises = Promise.all([home_promise, away_promise]).then(results => {
+                    original['home']['team'] = results[0].data()
+                    original['away']['team'] = results[1].data()
+                    var fixtures = []
+                    fixtures.push(original)
+                    response.status(200).send({ 
+                        'fixtures' : fixtures
+                    })
+                });
             })
             .catch(function(error) {
                 response.status(404).send({ 
@@ -43,18 +50,15 @@ module.exports = function (e, store, router) {
         var homeTeamId = original.home['team']
         var awayTeamId = original.away['team']
         var slug = fixtureSlug(date, homeTeamId, awayTeamId);
-        console.log('fixture write: ' + event.params.fixtureKey)
+
         if (slug !== event.params.fixtureKey) {
-            console.log('rewriting fixture with slug: ' + slug)
-            event.data.ref.parent.child(event.params.fixtureKey).set(null)
-            store.collection("teams").doc(homeTeamId).get().then(snapshot => {
-                console.log('rewriting fixture home team: ' + snapshot.data()['name'])
-                original['home']['team'] = snapshot.data()
-                store.collection("teams").doc(awayTeamId).get().then(snapshot => {
-                    console.log('rewriting fixture away team: ' + snapshot.data()['name'])
-                    original['away']['team'] = snapshot.data()
-                    console.log('returning modified fixture: ' +  + slug)
-                    return event.data.ref.parent.child(slug).set(original);
+            const home_promise = store.collection("teams").doc(original['home']['team']).get()
+            const away_promise = store.collection("teams").doc(original['away']['team']).get()
+            const team_promises = Promise.all([home_promise, away_promise]).then(results => {
+                original['home']['team'] = results[0].data()
+                original['away']['team'] = results[1].data()
+                return event.data.ref.parent.child(slug).set(original).then(snap => {
+                    event.data.ref.parent.child(event.params.fixtureKey).set(null)
                 });
             });
         } else {
