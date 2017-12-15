@@ -1,6 +1,42 @@
 var functions = require('firebase-functions');
 
-module.exports = function (e, store) {
+module.exports = function (e, store, router) {
+
+    router.get('/', (request, response) => {
+        store.collection('fixtures').get().then(snapshot => {
+            var fixtures = []
+            snapshot.forEach(doc => {
+                fixtures.push(doc.data())
+            });
+            response.send({
+                'fixtures' : fixtures
+            })
+        })
+    });
+
+    router.get('/:id', (request, response) => {
+        store.collection('fixtures').doc(request.params.id).get()
+            .then(snapshot => {
+                var fixtures = []
+                fixtures.push(snapshot.data())
+                response.status(200).send({ 
+                    'fixtures' : fixtures
+                })
+            })
+            .catch(function(error) {
+                response.status(404).send({ 
+                    'error' : {
+                        'message': 'Fixture does not exist'
+                    }
+                })
+            });
+    });
+
+    e.fixtures = functions.https.onRequest((request, response) => {
+        if (!request.path) { request.url = `/${request.url}` }
+        return router(request, response)
+    })
+
     e.buildFixtureKey = functions.firestore.document('/fixtures/{fixtureKey}').onWrite(event => {
         const original = event.data();
         var date = original['date']
@@ -25,27 +61,6 @@ module.exports = function (e, store) {
             console.log('ignoring fixture rewrite, slug already set: ' + slug)
             return;
         }
-    })
-
-    e.fixtures = functions.https.onRequest((request, response) => {
-        var fixtures = []
-        store.collection("fixtures").get().then(snapshot => {
-            snapshot.forEach(doc => {
-                var original = doc.data()
-                store.collection("teams").doc(original['home']['team']).get().then(snapshot => {
-                    original['home']['team'] = snapshot.data()
-                    store.collection("teams").doc(original['away']['team']).get().then(snapshot => {
-                        original['away']['team'] = snapshot.data()
-                        fixtures.push(original)
-                        if (fixtures.size == total) {
-                            response.send({
-                                "fixtures" : fixtures
-                            })
-                        }
-                    });
-                });
-            })
-        })
     })
 
     function fixtureSlug(date, homeTeam, awayTeam) {

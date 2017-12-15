@@ -11,5 +11,5 @@ const express = require("express")
 
 require('./src/players/players.js')(exports, store, express());
 require('./src/teams/teams.js')(exports, db);
-require('./src/fixtures/fixtures.js')(exports, store);
+require('./src/fixtures/fixtures.js')(exports, store, express());
 require('./src/migration/migration.js')(exports, db, store);
