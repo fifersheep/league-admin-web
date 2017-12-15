@@ -1,31 +1,31 @@
 var functions = require('firebase-functions');
 
 module.exports = function (e, store) {
-    e.buildFixtureKey = functions.firestore.document('/fixtures/{fixtureKey}').onWrite(event => {
-        const original = event.data();
-        var date = original['date']
-        var homeTeamId = original.home['team']
-        var awayTeamId = original.away['team']
-        var slug = fixtureSlug(date, homeTeamId, awayTeamId);
-        console.log('fixture write: ' + event.params.fixtureKey)
-        if (slug !== event.params.fixtureKey) {
-            console.log('rewriting fixture with slug: ' + slug)
-            event.data.ref.parent.child(event.params.fixtureKey).set(null)
-            store.collection("teams").doc(homeTeamId).get().then(snapshot => {
-                console.log('rewriting fixture home team: ' + snapshot.data()['name'])
-                original['home']['team'] = snapshot.data()
-                store.collection("teams").doc(awayTeamId).get().then(snapshot => {
-                    console.log('rewriting fixture away team: ' + snapshot.data()['name'])
-                    original['away']['team'] = snapshot.data()
-                    console.log('returning modified fixture: ' +  + slug)
-                    return event.data.ref.parent.child(slug).set(original);
-                });
-            });
-        } else {
-            console.log('ignoring fixture rewrite, slug already set: ' + slug)
-            return;
-        }
-    })
+    // e.buildFixtureKey = functions.firestore.document('/fixtures/{fixtureKey}').onWrite(event => {
+    //     const original = event.data();
+    //     var date = original['date']
+    //     var homeTeamId = original.home['team']
+    //     var awayTeamId = original.away['team']
+    //     var slug = fixtureSlug(date, homeTeamId, awayTeamId);
+    //     console.log('fixture write: ' + event.params.fixtureKey)
+    //     if (slug !== event.params.fixtureKey) {
+    //         console.log('rewriting fixture with slug: ' + slug)
+    //         event.data.ref.parent.child(event.params.fixtureKey).set(null)
+    //         store.collection("teams").doc(homeTeamId).get().then(snapshot => {
+    //             console.log('rewriting fixture home team: ' + snapshot.data()['name'])
+    //             original['home']['team'] = snapshot.data()
+    //             store.collection("teams").doc(awayTeamId).get().then(snapshot => {
+    //                 console.log('rewriting fixture away team: ' + snapshot.data()['name'])
+    //                 original['away']['team'] = snapshot.data()
+    //                 console.log('returning modified fixture: ' +  + slug)
+    //                 return event.data.ref.parent.child(slug).set(original);
+    //             });
+    //         });
+    //     } else {
+    //         console.log('ignoring fixture rewrite, slug already set: ' + slug)
+    //         return;
+    //     }
+    // })
 
     e.fixtures = functions.https.onRequest((request, response) => {
         var fixtures = []
