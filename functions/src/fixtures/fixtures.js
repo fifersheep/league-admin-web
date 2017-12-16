@@ -3,13 +3,29 @@ var functions = require('firebase-functions');
 module.exports = function (e, store, router) {
 
     router.get('/', (request, response) => {
+        var fixtures = []
         store.collection('fixtures').get().then(snapshot => {
-            var fixtures = []
+            var fixture_promises = []
             snapshot.forEach(doc => {
-                fixtures.push(doc.data())
+                var original = doc.data()
+                const home_promise = store.collection("teams").doc(original['home']['team']).get()
+                const away_promise = store.collection("teams").doc(original['away']['team']).get()
+                fixture_promises.push(Promise.all([home_promise, away_promise]).then(results => {
+                    original['home']['team'] = results[0].data()
+                    original['away']['team'] = results[1].data()
+                    fixtures.push(original)
+                }));
             });
-            response.send({
-                'fixtures' : fixtures
+            Promise.all(fixture_promises).then(snap => {
+                response.status(200).send({
+                    'fixtures' : fixtures
+                })
+            })
+        }).catch(error => {
+            response.status(500).send({
+                'error': {
+                    'message': 'Something went wrong gathering fixtures.'
+                }
             })
         })
     });
